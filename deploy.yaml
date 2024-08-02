@@ -15,16 +15,21 @@ spec:
     spec:
       containers:
       - name: image-sync-container
-        image: reg.redrock.team/sre/image_sync:v1.0.2
+        image: reg.redrock.team/sre/image_sync:v1.0.4
         command: ["/bin/bash", "-c"]
         args:
           - /usr/bin/image-sync.sh
         env:
-        - name: IMAGES
+        - name: SOURCE_ADDRESSES
           valueFrom:
             configMapKeyRef:
               name: image-config
-              key: images
+              key: source_addresses
+        - name: DESTINATION_ADDRESSES
+          valueFrom:
+            configMapKeyRef:
+              name: image-config
+              key: destination_addresses
         volumeMounts:
         - name: docker-socket
           mountPath: /var/run/docker.sock

@@ -2,16 +2,18 @@
 
 mkdir -p /root/.docker
 
+SOURCE_COUNT=$(echo $SOURCE_ADDRESSES | jq length)
 
-IMAGE_COUNT=$(echo $IMAGES | jq length)
+for ((i=0; i<SOURCE_COUNT; i++)); do
+  SOURCE_NAME=$(echo $SOURCE_ADDRESSES | jq -r ".[$i].name")
+  SOURCE_TAG=$(echo $SOURCE_ADDRESSES | jq -r ".[$i].tag")
+  DEST_NAME=$(echo $DESTINATION_ADDRESSES | jq -r ".[$i].name")
+  DEST_TAG=$(echo $DESTINATION_ADDRESSES | jq -r ".[$i].tag")
 
-for ((i=0; i<$IMAGE_COUNT; i++)); do
-  IMAGE_NAME=$(echo $IMAGES | jq -r ".[$i].name")
-  IMAGE_TAG=$(echo $IMAGES | jq -r ".[$i].tag")
+  SOURCE="$SOURCE_NAME:$SOURCE_TAG"
+  DEST="$DEST_NAME:$DEST_TAG"
 
-  docker pull reg.redrock.team/dockerhub/$IMAGE_NAME:$IMAGE_TAG
-
-  docker tag reg.redrock.team/dockerhub/$IMAGE_NAME:$IMAGE_TAG reg.redrock.team/sre/$IMAGE_NAME:$IMAGE_TAG
-
-  docker push reg.redrock.team/sre/$IMAGE_NAME:$IMAGE_TAG
+  docker pull $SOURCE
+  docker tag $SOURCE $DEST
+  docker push $DEST
 done

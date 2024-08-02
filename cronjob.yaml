@@ -1,0 +1,45 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: image-sync-cronjob
+  namespace: sre-tools
+spec:
+  schedule: "0 2 * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: image-sync
+        spec:
+          containers:
+          - name: image-sync-container
+            image: reg.redrock.team/sre/image_sync:v1.0.4
+            command: ["/bin/bash", "-c"]
+            args:
+              - /usr/bin/image-sync.sh
+            env:
+            - name: SOURCE_ADDRESSES
+              valueFrom:
+                configMapKeyRef:
+                  name: image-config
+                  key: source_addresses
+            - name: DESTINATION_ADDRESSES
+              valueFrom:
+                configMapKeyRef:
+                  name: image-config
+                  key: destination_addresses
+            volumeMounts:
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+            - name: docker-credentials
+              mountPath: /root/.docker
+          volumes:
+          - name: docker-credentials
+            secret:
+              secretName: image-sync
+          - name: docker-socket
+            hostPath:
+              path: /var/run/docker.sock
+          restartPolicy: OnFailure
+  concurrencyPolicy: Forbid

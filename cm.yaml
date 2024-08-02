@@ -4,5 +4,7 @@ metadata:
   name: image-config
   namespace: sre-tools
 data:
-  images: |
-    [{"name": "moby/buildkit", "tag": "latest"}]
+  source_addresses: |
+    [{"name": "reg.redrock.team/dockerhub/moby/buildkit", "tag": "latest"}]
+  destination_addresses: |
+    [{"name": "reg.redrock.team/sre/moby/buildkit", "tag": "latest"}]
