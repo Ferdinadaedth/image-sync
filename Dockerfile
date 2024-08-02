@@ -3,7 +3,7 @@ FROM docker:19.03.6-dind
 
 ENV TZ="Asia/Chongqing"
 
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories \
+RUN sed -i 's#https\?://dl-cdn.alpinelinux.org/alpine#https://mirrors.cqupt.edu.cn/alpine#g' /etc/apk/repositories \
     && apk upgrade \
     && apk add --no-cache bash jq  tzdata vim gcompat  \
     && ln -sf /usr/share/zoneinfo/${TZ} /etc/localtime \
